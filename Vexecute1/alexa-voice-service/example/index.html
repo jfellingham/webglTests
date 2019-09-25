@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=yes">
+  <title>Alexa Voice Service demo</title>
+  <link rel="stylesheet" href="./index.css">
+        <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+     
+    <script src="Build/UnityLoader.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    
+  
+    <script>
+      var unityInstance = UnityLoader.instantiate("unityContainer", "Build/Work2.json", {
+  compatibilityCheck: function (unityInstance, onsuccess, onerror) {
+    if (!UnityLoader.SystemInfo.hasWebGL) {
+      unityInstance.popup("Your browser does not support WebGL",
+        [{text: "OK", callback: onerror}]);
+    } else if (UnityLoader.SystemInfo.mobile) {
+      unityInstance.popup("Please note that Unity WebGL is not currently supported on mobiles. Press OK if you wish to continue anyway.",
+        [{text: "OK", callback: onsuccess}]);
+    } else if (["Edge", "Firefox", "Chrome", "Safari"].indexOf(UnityLoader.SystemInfo.browser) == -1) {
+      unityInstance.popup("Please note that your browser is not currently supported for this Unity WebGL content. Press OK if you wish to continue anyway.",
+        [{text: "OK", callback: onsuccess}]);
+    } else {
+      onsuccess();
+    }
+  },
+  Module: {
+    onRuntimeInitialized: function() {
+        SendMessage = function(gameObject, func, param) {
+          if (param === undefined) {
+            if (typeof this.SendMessage_vss != 'function')
+              this.SendMessage_vss = this.Module.cwrap('SendMessage', 'void', ['string', 'string']);
+            this.SendMessage_vss(gameObject, func);
+          } else if (typeof param === "string") {
+            if (typeof this.SendMessage_vsss != 'function')
+              this.SendMessage_vsss = this.Module.cwrap('SendMessageString', 'void', ['string', 'string', 'string']);
+            this.SendMessage_vsss(gameObject, func, param);
+          } else if (typeof param === "number") {
+            if (typeof this.SendMessage_vssn != 'function')
+              this.SendMessage_vssn = this.Module.cwrap('SendMessageFloat', 'void', ['string', 'string', 'number']);
+            this.SendMessage_vssn(gameObject, func, param);
+          } else
+              throw "" + param + " is does not have a type which is supported by SendMessage.";
+        }
+      },
+  },
+});
+        var context;
+window.addEventListener('load', init, false);
+function init() {
+  try {
+    // Fix up for prefixing
+    window.AudioContext = window.AudioContext||window.webkitAudioContext;
+    context = new AudioContext();
+  }
+  catch(e) {
+    alert('Web Audio API is not supported in this browser');
+  }
+}
+    </script>
+</head>
+<body>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.js"></script>
+    <script src="test.js"></script>
+
+     <div  style="display: block; width: 100%; height: 100% ">
+
+      <div class="webgl-content" style="width: 100%; height: 100%">
+      <div id="unityContainer" style="width: 100%; height: 100%"></div>
+
+    </div>
+        </div>
+  <h1>Alexa Voice Service demo</h1>
+  <p>Try asking things like: "What time is it?" or "Tell me the news".</p>
+  <button id="login">Login</button>
+  <button id="logout" disabled>Logout</button>
+  <button id="startRecording" disabled>Start recording</button>
+  <button id="stopRecording" disabled>Stop recording</button>
+  <button id="stopAudio" disabled>Stop audio</button>
+  <button id="pauseAudio" disabled>Pause audio</button>
+  <button id="playAudio" disabled>Play/Resume audio</button>
+  <button id="replayAudio" disabled>Replay audio</button>
+    <button id="Audio" onclick="sendMessage()" >sendAudio</button>
+      
+<!-- // <button id="getText" onclick="testa">Convert Mp3</button>-->
+    <button onclick="unityInstance.SendMessage('demo', 'changeLoginButton', 'Logout');">Hey</button>
+  <button id="getTex" onclick=
+          "(function(){
+    
+                              var xhttp = new XMLHttpRequest();
+xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+       // Typical action to be performed when the document is ready:
+       
+    }
+};
+xhttp.open('GET', 'https://access-alexa-na.amazon.com/v1/avs/speechrecognizer/recognize', true);
+xhttp.send();
+})();return false;">Get Json</button>
+
+  <ul id="log"></ul>
+  <ul id="audioLog"></ul>
+    <input id = "file" type = "file">
+    <input id = "input" type = "file">
+    <div id = "inputLine"></div>
+    <div id = "line"></div>
+    <script>
+        
+    var line = document.getElementById("line"); 
+    var inputLines = document.getElementById("inputLine");
+    var arrayInput = [];
+    var arraySymbols = [];
+    var str = "Result : ";
+    var input = "Input : ";
+    var arrayTranslation = [];
+    document.getElementById('input').onchange = function(){
+	var file = this.files[0];
+	var fr = new FileReader();
+	fr.onload = function(progressEvent){
+	    var words = this.result.split(' ');
+	    for(var i = 0; i < words.length; i++){
+		arrayInput[i] = words[i];
+		input += arrayInput[i] + " ";
+		for(var j = 0; j < arraySymbols.length; j++){
+		    if(arrayInput[i] == arraySymbols[j]){
+			console.log(arrayTranslation[j]);
+			str += arrayTranslation[j] + " ";  	
+		    }
+		}
+	    }
+	    inputLines.innerHTML = input;
+	     unityInstance.SendMessage('demo', 'play', str);  
+	};
+	fr.readAsText(file);
+    };
+    
+    
+    document.getElementById('file').onchange = function(){
+	var file = this.files[0];
+	var fr = new FileReader();
+	var regex = /\t\t*/;
+	fr.onload = function(progressEvent){
+	    var lines = this.result.split('\n');
+	    for(var i = 0; i < lines.length; i++){
+		var symbols = lines[i].split(regex);
+		arraySymbols[i] = symbols[0];
+		arrayTranslation[i] = symbols[1];
+	    }
+	};
+	fr.readAsText(file);
+    };
+    
+    
+    </script>
+
+  <script src="./index.bundle.js"></script>
+   
+   <script>        console.log("Loaded");   
+    
+       function getText1(){  
+     
+                                                 }</script>
+     <script>
+    function sendAud(){
+        console.log("Setting up ");
+        let button;
+let mic;
+let soundRec;
+let soundFile;
+
+          mic = new p5.AudioIn();
+  mic.start();
+  soundRec = new p5.SoundRecorder();
+  soundRec.setInput(mic)
+  soundFile = new p5.SoundFile();
+
+  button = createDiv("");
+  button.position(100,100);
+  button.size(100,100);
+  button.style('background-color', 'grey');
+         console.log("recording....");
+    soundRec.record(soundFile); // set up the soundfile to record and start recording
+
+    let recordingTimer = setTimeout(()=>{ // setup a timeout for the recording, after the time below expires, do the tings inside the {}
+
+      soundRec.stop(); // stop recording
+      let soundBlob = soundFile.getBlob(); //get the recorded soundFile's blob & store it in a variable
+
+      let formdata = new FormData() ; //create a from to of data to upload to the server
+      formdata.append('soundBlob', soundBlob,  'myfiletosave.wav') ; // append the sound blob and the name of the file. third argument will show up on the server as req.file.originalname
+
+          // Now we can send the blob to a server...
+      var serverUrl = '/upload'; //we've made a POST endpoint on the server at /upload
+      //build a HTTP POST request
+      var httpRequestOptions = {
+        method: 'POST',
+        body: formdata , // with our form data packaged above
+        headers: new Headers({
+          'enctype': 'multipart/form-data' // the enctype is important to work with multer on the server
+        })
+      };
+      // console.log(httpRequestOptions);
+      // use p5 to make the POST request at our URL and with our options
+      httpDo(
+        serverUrl,
+        httpRequestOptions,
+        (successStatusCode)=>{ //if we were successful...
+          console.log("uploaded recording successfully: " + successStatusCode)
+        },
+        (error)=>{console.error(error);}
+      )
+      console.log('recording stopped');
+
+    },1000) //record for one second
+
+    }
+    
+    </script>
+
+    <script>
+    
+    </script>
+<!--  <a href="https://github.com/miguelmota/alexa-voice-service.js" target="_blank"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/38ef81f8aca64bb9a64448d0d70f1308ef5341ab/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"></a>-->
+</body>
+</html>
+
