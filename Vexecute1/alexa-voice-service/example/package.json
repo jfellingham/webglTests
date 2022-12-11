@@ -15,7 +15,7 @@
     "@google-cloud/speech": "^3.2.6",
     "body-parser": "^1.15.0",
     "cors": "^2.7.1",
-    "express": "^4.13.4",
+    "express": "^4.17.3",
     "http-message-parser": "0.0.20",
     "multer": "^1.1.0",
     "request": "^2.72.0"
