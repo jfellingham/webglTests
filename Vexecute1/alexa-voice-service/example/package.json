@@ -21,7 +21,7 @@
     "request": "^2.72.0"
   },
   "devDependencies": {
-    "babelify": "^7.2.0",
+    "babelify": "^10.0.0",
     "watchify": "^3.7.0"
   }
 }
